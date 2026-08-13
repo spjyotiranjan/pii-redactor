@@ -218,11 +218,6 @@ The project is focused on typical PII and corporate identifiers, including:
 
 ---
 
-## Important note
-
-This tool is intended for privacy-safe document handling and sanitization. It is helpful for redacting leaking content from Word documents, but for official production-grade evaluation you should still validate the redaction with a real labeled dataset relevant to your use case.
-
----
 
 ## Quick commands summary
 

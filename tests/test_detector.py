@@ -44,6 +44,28 @@ class DetectorTests(unittest.TestCase):
         start, end = self.detector._expand_person_span(text, text.index("Kushal"), text.index("Hegde") + 5)
         self.assertEqual("Rohit Kushal Hegde", text[start:end])
 
+    def test_family_branch_names_are_detected_as_people(self) -> None:
+        text = (
+            "Family Branch(es) Parents Branch, Rajesh Branch, Sangeeta Branch, Rakhi Branch and Rohit Branch "
+            "Group Companies"
+        )
+        people = {entity.text for entity in self.detector.analyze(text) if entity.entity_type == "PERSON"}
+        self.assertTrue({"Rajesh", "Sangeeta", "Rakhi", "Rohit"}.issubset(people))
+
+    def test_employee_stock_option_scheme_is_detected_as_company(self) -> None:
+        text = (
+            "The employee stock option plan of our Company titled, 'KSH Employee Stock Option Scheme 2025' "
+            "approved by our Board and Shareholders."
+        )
+        companies = [entity.text for entity in self.detector.analyze(text) if entity.entity_type == "COMPANY"]
+        self.assertTrue(any("Employee Stock Option Scheme" in company for company in companies))
+
+    def test_sensitive_headings_are_detected(self) -> None:
+        text = "OUR PROMOTERS: John Doe, Jane Doe. Family Branch(es) Parents Branch, Rajesh Branch."
+        texts = {entity.text for entity in self.detector.analyze(text)}
+        self.assertTrue(any("OUR PROMOTERS".casefold() in candidate.casefold() for candidate in texts))
+        self.assertTrue(any("Family Branch".casefold() in candidate.casefold() for candidate in texts))
+
     def test_reporting_evaluation_module_is_removed(self) -> None:
         self.assertIsNone(importlib.util.find_spec("pii_redactor.reporting.evaluation"))
 

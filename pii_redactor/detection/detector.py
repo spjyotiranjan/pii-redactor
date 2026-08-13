@@ -72,6 +72,23 @@ class PiiDetector:
         r"(?P<name>[A-Z][A-Za-z'’-]+(?:\s+[A-Z][A-Za-z'’-]+){1,3})"
     )
     ALL_CAPS_NAME_RE = re.compile(r"(?<![A-Z])([A-Z][A-Z'’-]{1,}(?:\s+[A-Z][A-Z'’-]{1,}){1,3})(?![A-Z])")
+    FAMILY_BRANCH_RE = re.compile(
+        r"(?ix)\b(?:family\s+branch\(es\)|parents\s+branch|branch\s*\(es\)|family\s+branch)\b"
+        r"\s*(?:[:;-]|,)?\s*(?P<names>(?:[A-Z][A-Za-z'’-]+\s+branch(?:\s*,\s*|\s+and\s+|\s*\b))+[A-Z][A-Za-z'’-]+\s+branch)"
+    )
+    CONTEXTUAL_SENSITIVE_RE = re.compile(
+        r"(?ix)\b(?:family\s+branch\(es\)|parents\s+branch|our\s+promoters|group\s+companies|"
+        r"(?:[A-Z]{1,8}\s+)?employee\s+stock\s+option\s+(?:scheme|plan)|"
+        r"(?:[A-Z]{1,8}\s+)?stock\s+option\s+(?:scheme|plan)|esop)\b"
+        r"(?:\s+[0-9]{4})?"
+    )
+    SENSITIVE_HEADINGS_RE = re.compile(
+        r"(?ix)\b(?:our\s+promoters|family\s+branch\(es\)|family\s+branch|group\s+companies)\b"
+    )
+    ESOP_SCHEME_RE = re.compile(
+        r"(?ix)\b(?:[A-Z]{1,8}\s+)?(?:employee\s+stock\s+option\s+(?:scheme|plan)|stock\s+option\s+(?:scheme|plan)|esop)\b"
+        r"(?:\s+[0-9]{4})?"
+    )
     ADDRESS_LABEL_RE = re.compile(
         r"(?is)\b(?:registered|corporate|mailing|postal|residential|business|office)\s+address\b"
         r"\s*(?:is|:|-)?\s*(?P<address>[^\n;]{8,220})"
@@ -222,7 +239,11 @@ class PiiDetector:
             for entity in candidates
             if entity.entity_type in enabled
             and not self._allowlisted(entity.text)
-            and (entity.entity_type != "PERSON" or self._valid_person_candidate(entity.text))
+            and (
+                entity.entity_type != "PERSON"
+                or self._valid_person_candidate(entity.text)
+                or entity.source in {"family-branch-context", "sensitive-heading", "sensitive-context"}
+            )
         ]
         return self.resolve_overlaps(candidates)
 
@@ -351,6 +372,40 @@ class PiiDetector:
         for match in self.COMPANY_RE.finditer(text):
             if self._valid_company_candidate(match.group()):
                 found.append(self._entity("COMPANY", match, 0.83, "company-suffix"))
+
+        for match in self.SENSITIVE_HEADINGS_RE.finditer(text):
+            value = match.group(0).strip()
+            lower = value.casefold()
+            entity_type = "PERSON" if "promoter" in lower or "family" in lower or "branch" in lower else "COMPANY"
+            found.append(Entity(entity_type, match.start(), match.end(), 0.9, "sensitive-heading", value))
+
+        for match in self.CONTEXTUAL_SENSITIVE_RE.finditer(text):
+            value = match.group(0).strip()
+            lower = value.casefold()
+            entity_type = "PERSON" if "promoter" in lower or "family" in lower or "branch" in lower else "COMPANY"
+            end = match.end()
+            sentence_break = text.find(".", match.end())
+            if sentence_break != -1:
+                end = sentence_break + 1
+            found.append(Entity(entity_type, match.start(), end, 0.72, "sensitive-context", text[match.start():end]))
+
+        for match in self.ESOP_SCHEME_RE.finditer(text):
+            sentence = text[max(0, match.start() - 80) : min(len(text), match.end() + 120)]
+            if re.search(r"(?ix)\b(?:stock\s+option\s+(?:scheme|plan)|employee\s+stock\s+option\s+(?:scheme|plan)|esop)\b", sentence):
+                value = sentence.strip()
+                start = max(0, match.start() - 80)
+                end = min(len(text), match.end() + 120)
+                found.append(Entity("COMPANY", start, end, 0.76, "esop-title-context", value))
+
+        family_match = self.FAMILY_BRANCH_RE.search(text)
+        if family_match:
+            names = re.findall(r"(?<![A-Z])([A-Z][A-Za-z'’-]+)(?=\s+Branch)", family_match.group(0))
+            for name in names:
+                start = text.find(name, family_match.start())
+                if start != -1:
+                    end = start + len(name)
+                    if re.fullmatch(r"[A-Z][A-Za-z'’-]+", name):
+                        found.append(Entity("PERSON", start, end, 0.7, "family-branch-context", name))
 
         for regex in (self.HONORIFIC_PERSON_RE, self.ROLE_PERSON_RE, self.LABELED_PERSON_RE):
             for m in regex.finditer(text):

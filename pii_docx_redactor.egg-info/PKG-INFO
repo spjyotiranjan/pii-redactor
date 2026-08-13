@@ -1,0 +1,25 @@
+Metadata-Version: 2.4
+Name: pii-docx-redactor
+Version: 1.1.0
+Summary: Layout-preserving PII pseudonymization for DOCX text and images
+Requires-Python: >=3.10
+Requires-Dist: lxml<7,>=5.3
+Requires-Dist: Pillow<13,>=10.4
+Requires-Dist: presidio-analyzer<3,>=2.2.360
+Requires-Dist: presidio-anonymizer<3,>=2.2.360
+Provides-Extra: ner
+Requires-Dist: spacy<4,>=3.8; extra == "ner"
+Provides-Extra: ocr
+Requires-Dist: rapidocr<4,>=3; extra == "ocr"
+Requires-Dist: onnxruntime<2,>=1.20; extra == "ocr"
+Provides-Extra: test
+Requires-Dist: pytest<10,>=8.3; extra == "test"
+Provides-Extra: full
+Requires-Dist: spacy<4,>=3.8; extra == "full"
+Requires-Dist: rapidocr<4,>=3; extra == "full"
+Requires-Dist: onnxruntime<2,>=1.20; extra == "full"
+Requires-Dist: pytest<10,>=8.3; extra == "full"
+Dynamic: provides-extra
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary

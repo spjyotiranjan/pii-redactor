@@ -1,0 +1,2 @@
+[console_scripts]
+pii-redact = pii_redactor.application.cli:main

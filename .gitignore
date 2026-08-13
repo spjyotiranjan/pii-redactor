@@ -1,0 +1,55 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Packaging / build outputs
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# IDE/editor settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test and coverage output
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Jupyter notebooks
+.ipynb_checkpoints/
+
+# Local environment files
+.env
+.env.*
+
+# Generated project output
+output/
+!output/.gitkeep
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# pip / poetry / uv local caches
+pip-wheel-metadata/
+poetry.lock
+.uv-cache/

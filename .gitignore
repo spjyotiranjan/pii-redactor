@@ -18,11 +18,11 @@ dist/
 .eggs/
 
 # Generated Office and temp files
-*.docx
-*.doc
-*.docm
-*.dotx
-*.~lock.*
+# *.docx
+# *.doc
+# *.docm
+# *.dotx
+# *.~lock.*
 
 # IDE/editor settings
 .vscode/

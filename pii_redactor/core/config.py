@@ -65,7 +65,6 @@ class ImageConfig:
 
 @dataclass(slots=True)
 class PipelineConfig:
-    seed: str = "pii-redaction-assignment-v1"
     redact_images: bool = True
     remove_comments: bool = True
     remove_tracked_deletions: bool = True

@@ -5,10 +5,9 @@ from datetime import date
 
 
 class DeterministicPseudonymizer:
-    """Maps every PII type to a stable, unmistakably generic template value."""
+    """Maps detected values to generic replacement templates without requiring a caller-defined seed."""
 
-    def __init__(self, seed: str) -> None:
-        self.seed = seed
+    def __init__(self) -> None:
         self._mapping: dict[tuple[str, str], str] = {}
         self._originals: dict[tuple[str, str], str] = {}
 

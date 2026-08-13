@@ -11,11 +11,11 @@ from typing import Any
 
 from lxml import etree
 
-from ..core.config import PipelineConfig
-from ..core.models import Entity, PipelineReport
-from ..detection.detector import PiiDetector
-from ..imaging.redactor import ImageRedactor
-from ..replacement.pseudonymizer import DeterministicPseudonymizer
+from .config import PipelineConfig
+from .detector import PiiDetector
+from .image_pipeline import ImageRedactor
+from .models import Entity, PipelineReport
+from .pseudonymizer import DeterministicPseudonymizer
 
 
 W_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
@@ -38,7 +38,7 @@ class DocxRedactionPipeline:
         self.config = config or PipelineConfig()
         self.detector = PiiDetector(self.config.detector)
         self.pseudonymizer = DeterministicPseudonymizer()
-        self.image_redactor = ImageRedactor(self.detector, self.pseudonymizer, self.config.images)
+        self.image_redactor = ImageRedactor(self.detector, self.pseudonymizer)
 
     def redact(self, input_path: str | Path, output_path: str | Path, report_path: str | Path | None = None) -> PipelineReport:
         source = Path(input_path).resolve()

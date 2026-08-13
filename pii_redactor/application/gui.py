@@ -14,7 +14,6 @@ from ..document.docx_pipeline import DocxRedactionPipeline
 class GUIJobConfig:
     input_path: str
     output_path: str
-    seed: str = "pii-redaction-assignment-v1"
     redact_images: bool = True
     enable_presidio: bool = True
 
@@ -26,7 +25,7 @@ class GUIJobConfig:
         self.detector = SimpleNamespace(enable_presidio=self.enable_presidio)
 
     def to_pipeline_config(self) -> PipelineConfig:
-        config = PipelineConfig(seed=self.seed, redact_images=self.redact_images)
+        config = PipelineConfig(redact_images=self.redact_images)
         config.detector.enable_presidio = self.enable_presidio
         return config
 
@@ -37,7 +36,6 @@ def build_config_from_options(
     *,
     image_redaction: bool = True,
     enable_presidio: bool = True,
-    seed: str = "pii-redaction-assignment-v1",
 ) -> GUIJobConfig:
     if not input_path or not str(input_path).strip():
         raise ValueError("Input DOCX path is required.")
@@ -47,7 +45,6 @@ def build_config_from_options(
     return GUIJobConfig(
         input_path=str(input_path),
         output_path=str(output_path),
-        seed=seed,
         redact_images=image_redaction,
         enable_presidio=enable_presidio,
     )

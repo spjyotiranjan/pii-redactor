@@ -1,8 +1,8 @@
+import importlib.util
 import unittest
 
 from pii_redactor.core.config import DetectorConfig
 from pii_redactor.detection.detector import PiiDetector
-from pii_redactor.reporting.evaluation import evaluate_examples, synthetic_corpus
 
 
 class DetectorTests(unittest.TestCase):
@@ -44,10 +44,8 @@ class DetectorTests(unittest.TestCase):
         start, end = self.detector._expand_person_span(text, text.index("Kushal"), text.index("Hegde") + 5)
         self.assertEqual("Rohit Kushal Hegde", text[start:end])
 
-    def test_synthetic_metrics_are_complete(self) -> None:
-        report = evaluate_examples(self.detector, synthetic_corpus())
-        self.assertGreaterEqual(report["micro"]["precision"], 0.90)
-        self.assertGreaterEqual(report["micro"]["recall"], 0.90)
+    def test_reporting_evaluation_module_is_removed(self) -> None:
+        self.assertIsNone(importlib.util.find_spec("pii_redactor.reporting.evaluation"))
 
 
 if __name__ == "__main__":

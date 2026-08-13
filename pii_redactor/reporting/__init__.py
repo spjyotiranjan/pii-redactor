@@ -1,1 +1,1 @@
-"""Evaluation and operational reporting."""
+"""Operational reporting for redaction runs."""

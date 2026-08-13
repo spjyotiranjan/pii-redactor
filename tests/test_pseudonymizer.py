@@ -6,7 +6,7 @@ from pii_redactor.replacement.pseudonymizer import DeterministicPseudonymizer
 
 class PseudonymizerTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.pseudonymizer = DeterministicPseudonymizer("test-seed")
+        self.pseudonymizer = DeterministicPseudonymizer()
 
     def test_mapping_is_stable_and_different(self) -> None:
         first = self.pseudonymizer.replace("PERSON", "Rashi Patil")

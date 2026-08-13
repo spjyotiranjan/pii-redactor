@@ -17,6 +17,13 @@ dist/
 *.egg-info/
 .eggs/
 
+# Generated Office and temp files
+*.docx
+*.doc
+*.docm
+*.dotx
+*.~lock.*
+
 # IDE/editor settings
 .vscode/
 .idea/

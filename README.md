@@ -78,19 +78,40 @@ Think of the pipeline like this:
 
 ## Installation
 
-From the project folder:
+Install all required dependencies from the project requirements file:
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+Then install the project itself in editable mode so the commands are available:
 
 ```bash
 python -m pip install -e .
 ```
 
-If you want the optional OCR and NER features:
+This includes all required OCR, NLP, and GUI support packages.
+
+---
+
+## GUI usage
+
+You can launch the desktop GUI directly:
 
 ```bash
-python -m pip install -e .[full]
+python -m pii_redactor.application.gui
 ```
 
-This installs the package in editable mode so you can run the CLI directly.
+Or, after installation, use:
+
+```bash
+pii-redact-gui
+```
+
+The GUI allows you to:
+- choose an input DOCX file
+- pick an output folder
+- process the document and save the redacted output
 
 ---
 
@@ -149,7 +170,7 @@ python -m pii_redactor redact input.docx output.docx --no-images
 python -m pii_redactor redact input.docx output.docx --no-presidio
 ```
 
-This disables the Presidio-based NLP detection and uses regex/heuristic detection instead.
+This disables the Presidio-based NLP detection while keeping the rest of the full package installation in place.
 
 ### 6) Use a custom seed
 
@@ -222,17 +243,26 @@ The project is focused on typical PII and corporate identifiers, including:
 ## Quick commands summary
 
 ```bash
-# install
-python -m pip install -e .[full]
+# install all required packages
+python -m pip install -r requirements.txt
 
-# redact
+# install the project in editable mode
+python -m pip install -e .
+
+# launch the GUI
+python -m pii_redactor.application.gui
+
+# or use the installed GUI command
+pii-redact-gui
+
+# redact from terminal
 python -m pii_redactor redact input.docx output.docx
 
 # redact + save run report
 python -m pii_redactor redact input.docx output.docx --run-report output/run_report.json
 
 # redact + save evaluation report
-python -m pii_redactor redact input.docx output.docx --evaluation-report output/evaluation_report.json
+python -m pii_redactor redact input.docx output.docx --evaluation_report output/evaluation_report.json
 
 # evaluate against a gold file
 python -m pii_redactor evaluate --gold gold.json --output output/evaluation.json

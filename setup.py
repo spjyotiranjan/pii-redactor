@@ -24,5 +24,10 @@ setup(
             "pytest>=8.3,<10",
         ],
     },
-    entry_points={"console_scripts": ["pii-redact=pii_redactor.application.cli:main"]},
+    entry_points={
+        "console_scripts": [
+            "pii-redact=pii_redactor.application.cli:main",
+            "pii-redact-gui=pii_redactor.application.gui:main",
+        ]
+    },
 )
